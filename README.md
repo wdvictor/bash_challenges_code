@@ -13,6 +13,9 @@
  12. [AWK](#awk)
  13. [SED](#sed)
  14. [GREP](#grep)
+ 15. [Gerenciamento de sinais](#gerenciamento-de-sinais)
+ 16. [Interoperalidade](#interoperalidade)
+ 17. [Expressões aritméticas](#expressões-aritméticas)
 
 
 
@@ -830,3 +833,229 @@ Alguns Parâmetros do sed
 	```
 
 Este comando insere a string "Cabeçalho" como a primeira linha do arquivo `arquivo.txt`.
+
+# Grep
+
+O comando `grep` é uma ferramenta poderosa para pesquisar padrões em arquivos de texto. Ele permite que você encontre e imprima linhas que correspondam a um padrão específico. A sintaxe básica do comando `grep` é a seguinte:
+
+```bash
+grep [opções] padrão arquivo(s)
+```
+
+Aqui estão algumas opções comumente usadas com o comando `grep`:
+
+-   `-i`: Ignora diferenças de maiúsculas e minúsculas ao fazer a correspondência.
+-   `-v`: Inverte o resultado, ou seja, exibe apenas as linhas que não correspondem ao padrão.
+-   `-r` ou `-R`: Pesquisa recursivamente em todos os arquivos em um diretório e seus subdiretórios.
+-   `-l`: Exibe apenas os nomes dos arquivos que correspondem ao padrão.
+-   `-n`: Exibe o número de linha de cada correspondência.
+-   `-c`: Exibe apenas o número de linhas que correspondem ao padrão.
+-   `-w`: Faz a correspondência de palavras inteiras, evitando correspondências parciais.
+-   `-e <padrão>`: Permite especificar o padrão diretamente na linha de comando.
+-   `-f <arquivo>`: Lê os padrões de correspondência a partir de um arquivo.
+-   `-m <n>`: Limita a pesquisa a um número máximo de correspondências.
+
+Exemplos de uso do `grep`:
+
+-  Pesquisar um padrão em um arquivo:
+	```bash 
+	grep "padrão" arquivo.txt
+	```
+
+Este comando procura pelo padrão especificado no arquivo `arquivo.txt` e imprime todas as linhas que correspondem a ele.
+
+-  Pesquisar um padrão ignorando maiúsculas e minúsculas:
+	```bash
+	grep -i "padrão" arquivo.txt
+	```
+
+Este comando realiza a pesquisa pelo padrão no arquivo `arquivo.txt`, ignorando diferenças de maiúsculas e minúsculas.
+
+-  Pesquisar um padrão em vários arquivos:
+	```bash
+	grep "padrão" arquivo1.txt arquivo2.txt
+	```
+
+Este comando procura pelo padrão em vários arquivos e exibe as linhas que correspondem a ele.
+
+-  Pesquisar um padrão recursivamente em um diretório:
+	```bash
+	grep -r "padrão" diretório/
+	```
+
+Este comando realiza uma pesquisa recursiva em todos os arquivos dentro do diretório especificado em busca do padrão.
+
+-  Pesquisar um padrão e exibir o número de linha:
+	```bash
+	grep -n "padrão" arquivo.txt
+	```
+
+Este comando procura pelo padrão no arquivo `arquivo.txt` e exibe as linhas correspondentes, junto com seus números de linha.
+
+# Gerenciamento de sinais
+
+No Bash, o gerenciamento de sinais permite que você lide com eventos como interrupções do teclado (como Ctrl+C) e outros sinais enviados para o processo em execução. É possível capturar e tratar esses sinais, realizando ações específicas quando eles ocorrem.
+
+Aqui estão os conceitos básicos e exemplos de manipulação de sinais:
+
+1.  Capturando sinais: Você pode usar o comando `trap` para capturar sinais e definir um tratamento específico para eles. A sintaxe básica do `trap` é a seguinte:
+ 
+    ```bash
+    trap comando_sinal sinal
+    ```
+    
+    O `comando_sinal` é a ação que você deseja executar quando o `sinal` é recebido.
+    
+2.  Tratamento padrão: Se você não especificar um `comando_sinal` ao capturar um sinal, o tratamento padrão será aplicado. O tratamento padrão geralmente termina o processo, a menos que seja especificado de forma diferente para um sinal específico.
+    
+3.  Exemplos de captura de sinais:
+    
+    -   Capturar e tratar o sinal SIGINT (geralmente gerado pelo Ctrl+C):    
+	```bash
+		trap 'echo "Sinal SIGINT recebido"' SIGINT
+	``` 
+        
+    -   Capturar e tratar o sinal SIGTERM (geralmente enviado para solicitar a finalização do processo):
+    ```bash 
+        trap 'echo "Sinal SIGTERM recebido"' SIGTERM
+    ``` 
+       
+4.  Ignorando sinais: É possível ignorar sinais específicos, impedindo que eles interrompam o processo. Para fazer isso, basta usar o comando `trap` sem um `comando_sinal`: 
+    ```bash
+    trap '' sinal
+    ``` 
+    
+5.  Lista de sinais: Existem vários sinais disponíveis para capturar e tratar em um script Bash. Você pode usar o comando `trap -l` para listar todos os sinais disponíveis no seu sistema.
+    
+6.  Tratamento personalizado: Além de exibir mensagens simples, você pode definir funções personalizadas para lidar com os sinais. Por exemplo:
+      
+    ```bash
+    handle_sigint() {
+        echo "Recebido SIGINT. Encerrando o programa."
+        # Adicione o código necessário para finalizar o programa de forma adequada
+        exit 0
+    }
+    
+    trap handle_sigint SIGINT
+    ``` 
+    
+
+É importante destacar que nem todos os sinais podem ser capturados ou ignorados, pois alguns têm comportamentos específicos ou são enviados para finalizar o processo. Além disso, cada sistema operacional pode ter sinais adicionais ou personalizados.
+
+
+# Interoperalidade
+
+A interoperabilidade no Bash refere-se à capacidade de interagir com comandos externos e realizar comunicação entre processos. Isso é especialmente útil quando você precisa integrar scripts Bash com outras ferramentas ou executar comandos externos para obter resultados específicos.
+
+1.  Chamada de comandos externos: Para chamar um comando externo a partir de um script Bash, você pode simplesmente digitar o nome do comando seguido por quaisquer argumentos necessários. Por exemplo:
+    
+    ```bash
+    ls -l
+    ``` 
+    
+    Nesse exemplo, o comando `ls` é chamado para listar os arquivos e diretórios no diretório atual com detalhes.
+    
+2.  Capturando a saída de um comando: Você pode capturar a saída de um comando externo e armazená-la em uma variável usando a substituição de comandos com `$()` ou ````. Por exemplo:
+    
+    ```bash
+    files=$(ls)
+    echo "$files"
+    ``` 
+    
+    Nesse exemplo, o resultado da chamada do comando `ls` é armazenado na variável `files` e depois impresso no terminal.
+    
+3.  Redirecionamento de entrada e saída: O redirecionamento de entrada (`<`) e saída (`>`) permite que você interaja com comandos externos direcionando arquivos ou fluxos de dados para eles. Por exemplo:
+    
+    ```bash 
+    cat arquivo.txt | grep "palavra"
+    ``` 
+    
+    Nesse exemplo, o conteúdo do arquivo `arquivo.txt` é direcionado para o comando `grep`, que busca pela palavra "palavra" no texto.
+    
+4.  Pipes (`|`): Os pipes permitem que você encadeie vários comandos externos, redirecionando a saída de um comando para a entrada do próximo. Por exemplo:
+
+    ```bash
+    ls -l | grep ".txt"
+    ``` 
+    
+    Nesse exemplo, o comando `ls -l` lista todos os arquivos e diretórios com detalhes, e a saída é redirecionada para o comando `grep`, que filtra apenas as linhas que contêm a extensão ".txt".
+    
+5.  Execução condicional: Você pode usar operadores de execução condicional para controlar o fluxo do script com base no sucesso ou falha de um comando externo. Por exemplo:
+     
+    ```bsh
+    comando1 && comando2
+    ``` 
+    
+    Nesse exemplo, o `comando2` só será executado se o `comando1` for bem-sucedido (sem erros).
+
+
+
+#  Expressões aritméticas
+
+As expressões aritméticas no Bash são usadas para realizar operações matemáticas em scripts. Elas permitem que você realize cálculos simples ou complexos, atribua valores a variáveis numéricas e faça comparações numéricas. Existem várias maneiras de escrever e avaliar expressões aritméticas no Bash.
+
+1.  Sintaxe básica:
+    
+    -   Para realizar uma operação aritmética simples, basta usar a sintaxe `$((expressão))`. Por exemplo:
+	    ```bash
+		resultado=$((2 + 3))
+		echo $resultado  # exibe 5
+	    ``` 
+        
+    -   As expressões aritméticas podem incluir operadores como:
+	    - `+` Adição
+	    - `-` subtração
+	    - `*` Multiplicação
+	    - `/` Divisão 
+	    - `%` Resto da divisão
+    -   Parênteses podem ser usados para controlar a ordem das operações. Por exemplo:
+		```bash     
+		resultado=$((2 + 3 * 4))
+		echo $resultado  # exibe 14
+		``` 
+        
+2.  Variáveis numéricas:
+    
+    -   Você pode atribuir valores numéricos a variáveis e usá-las em expressões aritméticas. Por exemplo:
+  
+	     ```bash
+	     a=5
+	     b=3
+	     resultado=$((a + b))
+		 echo $resultado  # exibe 8
+		 ```
+        
+3.  Expressões complexas:
+    
+    -   Além das operações básicas, você também pode usar funções matemáticas, operadores de comparação e operadores lógicos em expressões aritméticas.
+    -   Funções matemáticas disponíveis incluem `sqrt()` (raiz quadrada), `sin()` (seno), `cos()` (cosseno), entre outras.
+    -   Exemplo com funções matemáticas:
+		```bash
+	      x=9
+	      y=$((sqrt(x) + sin(x)))
+		  echo $y  # exibe um valor calculado usando a função sqrt() e a função sin()
+		``` 
+        
+    -   Operadores de comparação como `<` (menor que), `>` (maior que), `==` (igual a) também podem ser usados em expressões aritméticas.
+    -   Exemplo com operadores de comparação:
+        
+	    ```bash
+	    x=5
+	    y=8
+	    if ((x > y)); then
+	        echo "x é maior que y"
+	    else
+	        echo "x é menor ou igual a y"
+	    fi
+	    ``` 
+4.  Avaliação de expressões aritméticas:
+    
+    -   As expressões aritméticas são avaliadas automaticamente pelo Bash. No entanto, se você deseja armazenar o resultado de uma expressão em uma variável ou usá-lo como argumento em um comando, pode usar a substituição de comando com a sintaxe `$((expressão))`.
+    -   Exemplo de avaliação de expressão aritmética usando substituição de comando:
+        
+        ```bash
+        resultado=$(($x + $y))
+        echo $resultado
+        ```
+
+
